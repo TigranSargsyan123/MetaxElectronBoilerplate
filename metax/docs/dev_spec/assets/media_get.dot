@@ -1,0 +1,76 @@
+digraph g {
+        graph [
+                pad="0.5",
+                ranksep="1",
+                nodesep="2"
+                rankdir = "LR"
+                bgcolor = "lightyellow"
+                style="filled"
+        ];
+        node [
+                fontsize = "30"
+                style="filled"
+        ];
+
+        rank = same {
+        "request1" [
+                label = "<f0> REQUEST 1|{ <f1> curr| <f2> last| <f3> range| <f4> list}"
+                shape = "record"
+        ];
+        "request2" [
+                label = "<f0> REQUEST 2|{ <f1> curr| <f2> last| <f3> range| <f4> list}"
+                shape = "record"
+        ];
+        }
+        subgraph cluster_list {
+                label="chunk list"
+        "chunk0" [
+                label = "<f0> CHUNK 0|{ <f1> requested| <f2> available|{ <f3> start| <f4> size}| <f5> uuid| <f6> path}"
+                shape = "record"
+        ];
+        "chunk1" [
+                label = "<f0> CHUNK 1|{ <f1> requested| <f2> available|{ <f3> start| <f4> size}| <f5> uuid| <f6> path}"
+                shape = "record"
+        ];
+        "chunk2" [
+                label = "<f0> CHUNK 2|{ <f1> requested| <f2> available|{ <f3> start| <f4> size}| <f5> uuid| <f6> path}"
+                shape = "record"
+        ];
+        "chunkn" [
+                label = "<f0> CHUNK N|{ <f1> requested| <f2> available|{ <f3> start| <f4> size}| <f5> uuid| <f6> path}"
+                shape = "record"
+        ];
+        }
+        "chunk0":f0 -> "chunk1" [
+                id = 0
+        ];
+        "chunk1":f0 -> "chunk2" [
+                id = 1
+        ];
+        "chunk2":f0 -> "chunkn" [
+                id = 2
+        ];
+
+        "request1":f4 -> "chunk0" [
+                id = 3
+        ]
+        "request2":f4 -> "chunk0" [
+                id = 4
+        ]
+
+        "request1":f1 -> "chunk0" [
+                id = 6
+        ]
+        "request1":f2 -> "chunkn" [
+                id = 5
+        ]
+
+        "request2":f1 -> "chunk2" [
+                id = 6
+        ]
+        "request2":f2 -> "chunkn" [
+                id = 5
+        ]
+}
+
+// vim:et:tabstop=8:shiftwidth=8:cindent:fo=croq:textwidth=80:
