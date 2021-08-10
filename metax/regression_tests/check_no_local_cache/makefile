@@ -1,1 +1,0 @@
-../../test_utils/test_case.mk

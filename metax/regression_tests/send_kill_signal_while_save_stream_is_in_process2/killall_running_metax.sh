@@ -1,1 +1,0 @@
-../../test_utils/killall_running_metax.sh
