@@ -1,0 +1,148 @@
+digraph g {
+        compound=true;
+        graph [
+                //rankdir = "LR"
+                rankdir = "TB"
+                bgcolor = "lightyellow"
+                style="filled"
+                ordering="out"
+        ];
+
+        node [
+                fontsize = "16"
+                shape = "ellipse"
+                style="filled"
+        ];
+
+        edge [
+        ];
+
+        // Web API
+        subgraph cluster_waa {
+                label = "WEB API"
+                bgcolor = "lightblue"
+
+                rank = same {
+                "metax_tx" [
+                        label = "Metax TX"
+                ]
+                "metax_rx" [
+                        label = "Metax RX"
+                ]
+                }
+        }
+
+        // Metax
+        subgraph cluster_metax {
+                label = "Metax"
+                bgcolor = "lightblue"
+                "dummy" [
+                        shape=point style=invis
+                        width = 3
+                ];
+                rank=same {
+                "kernel" [
+                        shape=box
+                        label="Kernel"
+                ]
+                "config" [
+                        shape=box
+                        label="Config handler"
+                ]
+                }
+                "storage" [
+                        shape=box
+                        label="Storage"
+                ]
+                "key_manager" [
+                        shape=box
+                        label="Key manager"
+                ]
+                "user_manager" [
+                        shape=box
+                        label="User manager"
+                ]
+                "backup" [
+                        shape=box
+                        label="Backup"
+                ]
+                "router" [
+                        shape=box
+                        label="Router"
+                ]
+                "link" [
+                        shape=box
+                        label="Link"
+                ]
+                "link_peer1" [
+                        shape=box
+                        label="Link peer1"
+                ]
+                "link_peer2" [
+                        shape=box
+                        label="Link peer2"
+                ]
+
+                "kernel" -> "key_manager" [
+                        dir=both
+                ]
+                "kernel" -> "config" [
+                        dir=both
+                ]
+                "kernel" -> "storage" [
+                        dir=both
+                ]
+                "kernel" -> "router" [
+                        dir=both
+                ]
+                "kernel" -> "user_manager" [
+                        dir=both
+                ]
+                "kernel" -> "backup" [
+                        dir=both
+                ]
+                "config" -> "key_manager" [
+                        dir=both
+                ]
+                "config" -> "storage" [
+                        dir=both
+                ]
+                "config" -> "router" [
+                        dir=both
+                ]
+                "config" -> "link" [
+                        dir=both
+                ]
+                "config" -> "user_manager" [
+                        dir=both
+                ]
+                "config" -> "backup" [
+                        dir=both
+                ]
+                "storage" -> "router" [
+                        dir=both
+                        constraint=false
+                ]
+                "user_manager" -> "backup" [
+                        dir=both
+                        constraint=false
+                ]
+                "router" -> "link" [
+                        dir=both
+                ]
+                "link" -> "link_peer1" [
+                        dir=both
+                ]
+                "link" -> "link_peer2" [
+                        dir=both
+                ]
+        }
+
+
+        "metax_tx" -> "kernel" [
+        ]
+        "kernel" -> "metax_rx" [
+        ]
+}
+
+// vim:et:tabstop=8:shiftwidth=8:cindent:fo=croq:textwidth=80:

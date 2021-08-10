@@ -1,0 +1,128 @@
+digraph g {
+        compound=true;
+        graph [
+                //rankdir = "LR"
+                rankdir = "TB"
+                bgcolor = "lightyellow"
+                style="filled"
+                ordering="out"
+        ];
+
+        node [
+                fontsize = "16"
+                shape = "ellipse"
+                style="filled"
+        ];
+
+        edge [
+        ];
+
+        // Web API
+        subgraph cluster_waa {
+                label = "WEB API"
+                bgcolor = "lightblue"
+
+        subgraph cluster_db_request_handler {
+                label = "db_request_handler"
+                "db_handler" [
+                        label = "parse HTTP request\ngenerate future-promise\nwait on future\nsend response\nin separate thread for each request"
+                        shape = "box"
+                        color = "goldenrod1"
+                ];
+        }
+
+        subgraph cluster_web_api_adapter {
+                label = "web_api_adapter"
+                bgcolor = "lightblue"
+                rank = same {
+                "waa" [
+                        label = "remember promise\nlock Metax TX\nforward request to Metax"
+                        shape = "box"
+                        color = "goldenrod1"
+                ];
+                "metax_input_handler" [
+                        label = "wait for response from Metax\nfind appropriate promise\nset response to promise"
+                        shape = "box"
+                        color = "greenyellow"
+                ];
+                }
+                
+                rank = same {
+                "metax_tx" [
+                        label = "Metax TX"
+                ]
+                "metax_rx" [
+                        label = "Metax RX"
+                ]
+                }
+        }
+
+                "db_handler" -> "waa" [
+                        label="data and promise"
+                ];
+
+                "waa" -> "metax_tx" [
+                        label=""
+                ];
+
+                "metax_rx" -> "metax_input_handler" [
+                        label=""
+                ];
+                "metax_input_handler" -> "db_handler" [
+                        label="set_promise"
+                ];
+        }
+
+        // Metax
+        subgraph cluster_metax {
+                label = "Metax"
+                bgcolor = "lightblue"
+                "dummy" [
+                        shape=point style=invis
+                        width = 3
+                ];
+                rank = same {
+                }
+        }
+
+        "curl" [
+                color = "aquamarine3"
+        ]
+        "browser" [
+                color = "aquamarine3"
+        ]
+        "phone" [
+                color = "aquamarine3"
+        ]
+
+        "curl" -> "db_handler" [
+                label = "http(s) request"
+        ]
+        "browser" -> "db_handler" [
+                label = "http(s) request"
+        ]
+        "phone" -> "db_handler" [
+                label = "http(s) request"
+        ]
+        "db_handler" -> "curl" [
+                label = "response"
+                constraint=false
+        ]
+        "db_handler" -> "browser" [
+                label = "response"
+                constraint=false
+        ]
+        "db_handler" -> "phone" [
+                label = "response"
+                constraint=false
+        ]
+
+        "metax_tx" -> "dummy" [
+                lhead=cluster_metax;
+        ]
+        "dummy" -> "metax_rx" [
+                ltail=cluster_metax;
+        ]
+}
+
+// vim:et:tabstop=8:shiftwidth=8:cindent:fo=croq:textwidth=80:
