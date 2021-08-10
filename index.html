@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script>
+			const config = {
+				//"uuid": "5d11ef09-e196-4cb7-aafd-312d6f950c7e",
+				"uuid": "3d45a394-833d-4f83-8d72-aeceb80ea380",
+				//"parameter": "f01be7e3-5a78-4b9f-a089-4b42cb61ff7f",
+				"port": "8001"
+			};
+		</script>
+		<script type='module'>
+			import metax from "./metax.js";
+
+			async function init() {
+				await metax.connect('localhost', config.port, false, false)
+					.then(r => {
+						if (r == "websocket connected") {
+							writeMessage("metax_init_response", "ok", "green");
+							document.getElementById("local_lookup").style.display = "block";
+							get();
+						} else {
+							writeMessage("metax_init_response", "failed", "red");
+							document.getElementById("failed_metax_init").style.display = "block";
+						}
+					})
+					.catch(r => {
+						writeMessage("metax_init_response", "failed", "red");
+						document.getElementById("failed_metax_init").style.display = "block";
+					});
+			}
+
+			init();
+			async function get() {
+				await metax.get(config.uuid)
+					.then(res => {
+						writeMessage("local_lookup_reponse", "found", "green");
+						redirectToPage();
+					})
+					.catch(e => {
+						let res = e.toString();
+						writeMessage("local_lookup_reponse", "not found", "red");
+						document.getElementById("connect_network").style.display = "block";
+						timer();
+						let i = res.indexOf('"error":"Getting file failed:');
+						if ( i != -1) {
+							waitToConnect();
+						} else {
+							console.log(e);
+						}
+					})
+			}
+
+			function writeMessage(i, m, c) {
+				document.getElementById(i).innerHTML = `[ <span style='color:${c}'>${m}</span> ]`;
+			}
+
+			var wait = ms => new Promise((r, j) => setTimeout(r, ms));
+
+			async function waitToConnect() {
+				let peers = await metax.get_online_peers();
+				if(peers.length == 0 ) {
+					await wait(1000);
+					console.log('trying to connect');
+					waitToConnect();
+				} else {
+					redirectToPage();
+				}
+			}
+
+			async function redirectToPage() {
+				document.getElementById("app_launch").style.display = "block";
+				await wait(1500);
+				if(config.parameter == undefined) {
+					location.replace(`http://localhost:${config.port}/db/get?id=${config.uuid}`);
+				} else {
+					location.replace(`http://localhost:${config.port}/db/get?id=${config.uuid}#${config.parameter}`);
+				}
+			}
+
+		</script>
+	</head>
+	<body>
+                <h2 id="title" style="margin-left:20%; margin-top:10%">
+			Loading Metax Application:
+                </h2>
+		<div style="margin-left:20%;margin-right:20%;">
+			<div "metax_init" style="margin-top:2%;">
+				<h2 style="float:left;">
+					Initializing Metax: 
+				</h2>
+				<h2 id="metax_init_response" style="float:right;">
+				</h2>
+    				<br style="clear:both;" />
+			</div>
+			<div id="local_lookup" style="margin-top:0%;display:none">
+				<h2 style="float:left;margin-top:0%">
+					Lookup the app in local storage
+				</h2>
+				<h2 id="local_lookup_reponse" style="float:right;margin-top:0%">
+				</h2>
+    				<br style="clear:both;" />
+			</div>
+			<div id="connect_network" style="margin-top:0%;display:none">
+				<h2 style="float:left;margin-top:0%">
+					Connecting to metax network
+				</h2>
+				<h2 id="timer" style="float:right;margin-top:0%">
+                        		<time>00:00</time>
+				</h2>
+    				<br style="clear:both;"/>
+			</div>
+			<h2 id="app_launch" style="float:left;margin-top:0%;display:none">
+				Launching the application...
+			</h2>
+			<h2 id="failed_metax_init" style="float:left;margin-top:0%;display:none;color:red">
+				Failed to initialize metax, please contact your Metax administrator. 
+			</h2>
+		</div>
+                <h3 id="title" style="margin-left:20%; margin-top:10%">
+                </h3>
+                <script> 
+                        let h1 = document.getElementById('timer'),
+                            start = document.getElementById('start'),
+                            stop = document.getElementById('stop'),
+                            clear = document.getElementById('clear'),
+                            seconds = 0, minutes = 0, hours = 0,
+                            t;
+
+                        function add() {
+                            seconds++;
+                            if (seconds >= 60) {
+                                seconds = 0;
+                                minutes++;
+                            }
+
+                            h1.textContent = (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds);
+
+                            timer();
+                        }
+
+                        function timer() {
+                            t = setTimeout(add, 1000);
+                        }
+		</script>
+	</body>
+</html>
+
