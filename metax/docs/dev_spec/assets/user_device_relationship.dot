@@ -1,0 +1,84 @@
+digraph g {
+        compound=true;
+        graph [
+                //rankdir = "LR"
+                bgcolor = "lightyellow"
+                style="filled"
+        ];
+
+        node [
+                fontsize = "16"
+                shape = "ellipse"
+                style="filled"
+        ];
+
+        edge [
+        ];
+
+        subgraph cluster_0 {
+                label = "User 1"
+                bgcolor = "lightblue"
+                "dummy_0" [
+                        shape=point style=invis
+                ]
+                "dev01" [
+                        label = "Device 1"
+                        //shape = "box"
+                ];
+                "dev02" [
+                        label = "Device 2"
+                ];
+                "dev01" -> "dev02" [
+                        label="peer connection"
+                        dir = "none"
+                ];
+        }
+
+        subgraph cluster_1 {
+                label = "User 2"
+                bgcolor = "lightblue"
+                "dummy_1" [
+                        shape=point style=invis
+                ]
+                "dev11" [
+                        label = "Device 1"
+                        //shape = "box"
+                ];
+                "dev12" [
+                        label = "Device 2"
+                ];
+                "dev11" -> "dev12" [
+                        label = "peer connection"
+                        dir = "none"
+                ];
+        }
+
+        subgraph cluster_2 {
+                rankdir = "LR"
+                label = "Device peering flow"
+                bgcolor = "lightblue"
+
+                "D1" [
+                        label="User 1's device 1"
+                ]
+                "D2" [
+                        label="User 2's device 2"
+                ]
+                { rank=same
+
+                "D1" -> "D2" [
+                        label="peer connection (balanced)"
+                        id = 1
+                        dir = "none"
+                ];
+                "D1" -> "D2" [
+                        label="1 establish socket connection"
+                        id = 1
+                        dir = "none"
+                ];
+                }
+        }
+}
+
+
+// vim:et:tabstop=8:shiftwidth=8:cindent:fo=croq:textwidth=80:
