@@ -1,19 +1,4 @@
 const { app, BrowserWindow } = require('electron')
-const child_process = require('child_process');
-
-var metax_process;
-
-function metax_start() {
-  metax_process = child_process.execFile('./metax/bin/metax_web_api', ['-f', './metax/config.xml'], (err, stdout, stderr) => {
-  if(err) {
-    console.log(`this is child process error - ${err}`);
-  }
-  });
-}
-
-function metax_stop() {
-  metax_process.kill();  
-}
 
 function createWindow() {
   let win = new BrowserWindow({
@@ -40,5 +25,3 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
-
-metax_start();
